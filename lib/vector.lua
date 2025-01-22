@@ -12,6 +12,7 @@ local vector = setmetatable({}, module_mt)
 --- @operator mul(number): vector
 --- @operator div(number): vector
 --- @operator unm(): vector
+--- @operator concat(vector): vector
 local vector_methods = {}
 local vector_mt = {
   __index = vector_methods,
@@ -78,6 +79,17 @@ vector_mt.__mul = function(self, n)
   local result = vector {}
   for i = 1, #self do
     result[i] = self[i] * n
+  end
+  return result
+end
+
+vector_mt.__concat = function(self, other)
+  local result = vector {}
+  for i = 1, #self do
+    result[i] = self[i]
+  end
+  for i = 1, #other do
+    result[i + #self] = other[i]
   end
   return result
 end

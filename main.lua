@@ -17,27 +17,54 @@ end
 local matrix = require("matrix")
 
 
+math.randomseed(os.clock())
+
+local SQUARE_MESH_FORMAT = {
+  {"VertexPosition", "float", 3},
+  {"VertexColor", "byte", 4},
+}
+
+local n = 100
+local y = -10
+
+--- @param position vector
+--- @param size vector
+--- @param color vector
+--- @return love.Mesh
+local rect_mesh = function(position, size, color)
+  local edge1 = Vector {0, 0, n}
+  local edge2 = Vector {n, 0, 0}
+  return love.graphics.newMesh(
+    SQUARE_MESH_FORMAT,
+    Log {position + edge1 + edge2 .. color,
+     position + edge1 .. color,
+     position .. color,
+     position + edge2 .. color},
+    -- {{n, y, n, unpack(color)},
+    --  {0, y, n, unpack(color)},
+    --  {0, y, 0, unpack(color)},
+    --  {n, y, 0, unpack(color)}},
+    "fan"
+  )
+end
+
+
 --- @diagnostic disable-next-line:param-type-mismatch
 local shader = love.graphics.newShader(nil, "normal.vert")
 
 local n = 100
 local y = -10
 
-local mesh = love.graphics.newMesh(
-  {{"VertexPosition", "float", 3},
-   {"VertexColor", "byte", 4}},
-  {{-n, y, -n, math.random(), math.random(), math.random(), 1},
-   {0, y, -n, math.random(), math.random(), math.random(), 1},
-   {0, y, 0, math.random(), math.random(), math.random(), 1},
-   {-n, y, 0, math.random(), math.random(), math.random(), 1}},
-  "fan"
-)
+local meshes = {
+  rect_mesh(Vector.x3.down * 10, nil, Vector {math.random(), math.random(), math.random(), 1}),
+  rect_mesh(Vector.x3.up * 25, nil, Vector {math.random(), math.random(), math.random(), 1}),
+}
 
 local position = Vector.x3.back * 3
 local rotation = {
-  yaw = -math.pi / 2,
+  yaw = math.pi / 2,
   pitch = 0,
-  _vector = Vector.x3.front,
+  _vector = Vector.x3.back,
 }
 
 
@@ -56,7 +83,9 @@ love.draw = function()
   shader:send("view", "column", matrix.look_at(position, position + rotation._vector, Vector.x3.up))
 
   love.graphics.clear(.2, .2, .2, 1)
-  love.graphics.draw(mesh)
+  for _, mesh in ipairs(meshes) do
+    love.graphics.draw(mesh)
+  end
 end
 
 local SENSITIVITY = 0.01
