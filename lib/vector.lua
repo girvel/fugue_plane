@@ -28,7 +28,9 @@ end
 -- CONSTANTS --
 
 vector.x3 = {
+  zero = vector {0, 0, 0},
   up = vector {0, 1, 0},
+  down = vector {0, -1, 0},
   front = vector {0, 0, -1},
   back = vector {0, 0, 1},
 }
@@ -72,6 +74,10 @@ vector_mt.__mul = function(self, n)
   return result
 end
 
+vector_mt.__tostring = function(self)
+  return ("{%s}"):format(table.concat(self, "; "))
+end
+
 
 -- METHODS --
 
@@ -107,17 +113,23 @@ vector_methods.length = function(self)
   return math.sqrt(self:square_length())
 end
 
---- @param self vector
-vector_methods.normalize = function(self)
+--- @generic T: vector
+--- @param self T
+--- @return T
+vector_methods.mut_normalize = function(self)
+  ---@cast self vector
+
   local length = self:length()
   for i = 1, #self do
     self[i] = self[i] / length
   end
+  return self
 end
 
 --- @param self vector
 --- @param other vector
 --- @return vector
+--- @nodiscard
 vector_methods.vector_product = function(self, other)
   assert(#self == #other and #self == 3)
 
@@ -128,6 +140,13 @@ vector_methods.vector_product = function(self, other)
 	result[3] = self[1] * other[2] - self[2] * other[1]
 
   return result
+end
+
+--- @generic T
+--- @param self T
+--- @return T
+vector_methods.clone = function(self)
+  return vector(unpack(self))
 end
 
 
