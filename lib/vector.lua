@@ -66,6 +66,14 @@ vector_mt.__sub = function(self, other)
   return result
 end
 
+vector_mt.__unm = function(self)
+  local result = vector {}
+  for i = 1, #self do
+    result[i] = -self[i]
+  end
+  return result
+end
+
 vector_mt.__mul = function(self, n)
   local result = vector {}
   for i = 1, #self do
@@ -120,8 +128,10 @@ vector_methods.mut_normalize = function(self)
   ---@cast self vector
 
   local length = self:length()
-  for i = 1, #self do
-    self[i] = self[i] / length
+  if length ~= 0 then
+    for i = 1, #self do
+      self[i] = self[i] / length
+    end
   end
   return self
 end

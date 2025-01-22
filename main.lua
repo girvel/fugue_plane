@@ -76,15 +76,28 @@ love.mousemoved = function(_, _, dx, dy)
   }):mut_normalize()
 end
 
-love.keypressed = function(key, scancode, isrepeat)
-  local SPEED = 0.15
-  if key == "w" then
-    position = position - rotation._vector * SPEED  -- TODO! wtf rotation is inverted?
-  end
-  if key == "s" then
-    position = position + rotation._vector * SPEED
+love.update = function(dt)
+  local delta = Vector.x3.zero
+
+  local forward = -rotation._vector  -- TODO! wtf rotation is inverted?
+  local left = rotation._vector:vector_product(Vector.x3.up)
+  for _, pair in ipairs({
+    {"w", forward},
+    {"a", left},
+    {"s", -forward},
+    {"d", -left},
+  }) do
+    local key, direction = unpack(pair)
+    if love.keyboard.isDown(key) then
+      delta = delta + direction
+    end
   end
 
+  local SPEED = 0.15
+  position = position + delta:mut_normalize() * SPEED
+end
+
+love.keypressed = function(key, scancode, isrepeat)
   if key == "escape" then
     love.event.quit()
   end
