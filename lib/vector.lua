@@ -28,7 +28,7 @@ end
 -- CONSTANTS --
 
 vector.x3 = {
-  up = vector {0, 1, 0},  -- TODO! is y <=> height a standard?
+  up = vector {0, 1, 0},
   front = vector {0, 0, -1},
   back = vector {0, 0, 1},
 }
@@ -79,7 +79,7 @@ end
 --- @param other vector
 --- @return number
 --- @nodiscard
-vector_methods.dot_product = function(self, other)
+vector_methods.scalar_product = function(self, other)
   local size = #self
   assert(
     size == #other,
@@ -97,7 +97,7 @@ end
 --- @return number
 --- @nodiscard
 vector_methods.square_length = function(self)
-  return self:dot_product(self)
+  return self:scalar_product(self)
 end
 
 --- @param self vector
@@ -118,7 +118,7 @@ end
 --- @param self vector
 --- @param other vector
 --- @return vector
-vector_methods.cross = function(self, other)
+vector_methods.vector_product = function(self, other)
   assert(#self == #other and #self == 3)
 
   local result = vector {}

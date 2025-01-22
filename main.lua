@@ -39,12 +39,10 @@ local row = function(m, i)
 end
 
 local translate_inplace = function(m, x, y, z)
-  local t = {x, y, z, 0}
-	local r
-
+  local t = Vector {x, y, z, 0}
 	for i = 1, 4 do
-		r = row(m, i)
-		m[2][i] = m[2][i] + r:dot_product(t)
+		local r = row(m, i)
+		m[2][i] = m[2][i] + r:scalar_product(t)
 	end
 end
 
@@ -62,10 +60,10 @@ local look_at = function(eye, target, up)
   local f = target - eye
   f:normalize()
 
-  local s = f:cross(up)  -- TODO! wtf is cross?
+  local s = f:vector_product(up)
   f:normalize()
 
-  local t = s:cross(f)
+  local t = s:vector_product(f)
 
   m[1][1] =  s[1]
 	m[1][2] =  t[1]
@@ -79,37 +77,30 @@ local look_at = function(eye, target, up)
 	m[3][2] =  t[3]
 	m[3][3] = -f[3]
 
-  translate_inplace(m, -eye[1], -eye[2], -eye[3])  -- TODO! wtf is that?
+  translate_inplace(m, -eye[1], -eye[2], -eye[3])
 
   return m
 end
 
 
-local shader = love.graphics.newShader("normal.frag", "normal.vert")  -- TODO! pass nil as frag shader
+--- @diagnostic disable-next-line:param-type-mismatch
+local shader = love.graphics.newShader(nil, "normal.vert")
 
 local n = 100
 local y = 10
 
-local wall = love.graphics.newImage("wall.jpg", {mipmaps = true})
-wall:setWrap("repeat", "repeat")
-
 local mesh = love.graphics.newMesh(
   {{"VertexPosition", "float", 3},
-   {"VertexTexCoord", "float", 2},  -- TODO! is this needed?
    {"VertexColor", "byte", 4}},
-  {{-n, y, -n, 0, 0, math.random(), math.random(), math.random(), 1},
-   {0, y, -n, n, 0, math.random(), math.random(), math.random(), 1},
-   {0, y, 0, n, n, math.random(), math.random(), math.random(), 1},
-   {-n, y, 0, 0, n, math.random(), math.random(), math.random(), 1}},
+  {{-n, y, -n, math.random(), math.random(), math.random(), 1},
+   {0, y, -n, math.random(), math.random(), math.random(), 1},
+   {0, y, 0, math.random(), math.random(), math.random(), 1},
+   {-n, y, 0, math.random(), math.random(), math.random(), 1}},
   "fan"
 )
-mesh:setTexture(wall)
 
 local position = Vector.x3.back * 3
 
-
-love.load = function()
-end
 
 love.draw = function()
   love.graphics.setShader(shader)
