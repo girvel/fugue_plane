@@ -12,8 +12,8 @@ matrix.get_projection_matrix = function(fov, aspect, n, render_distance)
   return {
     {a / aspect, 0, 0, 0},
     {0, a, 0, 0},
-    {0, 0, -(f + n) / (f - n), -1},
-    {0, 0, -2 * f * n / (f - n), 0},
+    {0, 0, -(f + n) / (f - n), -2 * f * n / (f - n)},
+    {0, 0, -1, 0},
   }
 end
 
